@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.c88.game.adapter.mapper.PlatformGameMapper">
+
+    <update id="modifyPlatformGameBottom" parameterType="java.lang.Integer">
+        update ga_platform_game ,(select max(game_sort) as sort from ga_platform_game) as max_sort
+        set game_sort = max_sort.sort + 1
+        where id = #{id}
+    </update>
+
+    <update id="modifyPlatformGameTop" parameterType="java.lang.Integer">
+        update ga_platform_game ,(select min(game_sort) as sort from ga_platform_game) as min_sort
+        set game_sort = min_sort.sort - 1
+        where id = #{id}
+    </update>
+
+</mapper>

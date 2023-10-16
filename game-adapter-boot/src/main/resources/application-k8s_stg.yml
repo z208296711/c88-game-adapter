@@ -1,0 +1,101 @@
+spring:
+  cloud:
+    kubernetes:
+      client: c88
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+  elasticsearch:
+    uris: c88-es-http.c88
+  shardingsphere:
+    mode:
+      type: memory
+    datasource:
+      names: c88
+      c88:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://c88-mysql:3306/c88?serverTimezone=GMT&useUnicode=true&characterEncoding=utf8&useSSL=false
+        username: root
+        password: toxnMCaR7ABydiij74QoKNF7
+        type: com.zaxxer.hikari.HikariDataSource
+        max-active: 16
+    rules:
+      sharding:
+        tables:
+          ga_bet_order:
+            actualDataNodes: c88.ga_bet_order_$->{0..9}
+            tableStrategy:
+              standard:
+                sharding-column: member_id # 分片欄位
+                sharding-algorithm-name: order_inline
+        sharding-algorithms:
+          order_inline:
+            type: inline
+            props:
+              algorithm-expression: ga_bet_order_$->{member_id % 10}
+    props:
+      # 日志显示具体的SQL
+      sql-show: true
+  redis:
+    password: cc6c1ad6-0fb8-420f-8c05-00afa195b17e 
+    database: 0
+    host: c88-redis
+    port: 6379
+  cache:
+    # 缓存类型 redis、none(不使用缓存)
+    type: redis
+    # 缓存时间(单位：ms)
+    redis:
+      time-to-live: 3600000
+      # 缓存null值，防止缓存穿透
+      cache-null-values: true
+      # 允许使用缓存前缀
+      use-key-prefix: true
+      # 缓存前缀，没有设置使用注解的缓存名称(value)作为前缀，和注解的key用双冒号::拼接组成完整缓存key
+      key-prefix: 'game:'
+  rabbitmq:
+    host: c88-rabbitmq.c88
+    port: 5672
+    username: default_user_waTxIGEPnMjEqg2Q12f
+    password: mNfAlXCjddAfUTNWDQ8R9BtjNs2TX8gT
+    listener:
+      simple:
+        acknowledge-mode: manual
+  kafka:
+    listener:
+      ack-mode: MANUAL
+    bootstrap-servers: 10.251.222.1:9092,10.251.222.2:9092,10.251.222.3:9092
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: '*'
+#storage configuration
+cloud-storage:
+  gcp:
+    url: https://storage.googleapis.com/stg-comebet/
+    project: stg-sports
+    credentials-classpath: classpath:keys/k8s_stg/google-cloud-storage.json
+
+#中心任務啟用狀態
+center-task-client:
+  enable: true
+
+#中心任務設定
+xxl:
+  job:
+    executor:
+      ip:
+      log-retention-days: 30
+      app-name: game-adapter
+      log-path: ./logs/
+      address:
+      port: 9998
+    accessToken:
+    admin:
+      addresses: http://xxl-job-admin:8088/xxl-job-admin

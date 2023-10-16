@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.c88.game.adapter.mapper.BetOrderMapper">
+
+    <select id="findMemberAccountBetRecordPlatformDate"
+            resultType="com.c88.game.adapter.pojo.vo.H5MemberAccountBetDetailRecordVO">
+        SELECT platform_code as platformName,
+        game_category_code as gameCategoryCode,
+        transaction_time as gmtCreate,
+        DATE_FORMAT(gmt_create, '%Y-%m-%d') as createDate
+        FROM ga_bet_order
+        WHERE 1 = 1
+        and member_id = #{memberId}
+        <if test="form.gameCategoryCode != '' and form.gameCategoryCode != null">
+            and game_category_code = #{form.gameCategoryCode}
+        </if>
+        <if test="form.platformCode != '' and form.platformCode != null">
+            and platform_code = #{form.platformCode}
+        </if>
+        and transaction_time between #{startTime} and #{endTime}
+        GROUP BY platform_id, DATE_FORMAT(transaction_time, '%Y%m%d'),game_category_code
+        ORDER BY id DESC
+    </select>
+
+</mapper>

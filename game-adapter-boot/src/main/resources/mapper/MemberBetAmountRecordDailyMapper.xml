@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.c88.game.adapter.mapper.MemberBetAmountRecordDailyMapper">
+
+    <resultMap id="BaseResultMap" type="com.c88.game.adapter.pojo.entity.MemberBetAmountRecordDaily">
+            <id property="id" column="id" jdbcType="OTHER"/>
+            <result property="memberId" column="member_id" jdbcType="INTEGER"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="gmtCreate" column="gmt_create" jdbcType="TIMESTAMP"/>
+            <result property="platformCode" column="platform_code" jdbcType="VARCHAR"/>
+            <result property="platformId" column="platform_id" jdbcType="INTEGER"/>
+            <result property="gameCategoryCode" column="game_category_code" jdbcType="VARCHAR"/>
+            <result property="betAmount" column="bet_amount" jdbcType="DECIMAL"/>
+            <result property="validBetAmount" column="valid_bet_amount" jdbcType="DECIMAL"/>
+            <result property="settle" column="settle" jdbcType="DECIMAL"/>
+            <result property="winLoss" column="win_loss" jdbcType="DECIMAL"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,member_id,username,
+        gmt_create,platform_code,platform_id,
+        game_category_code,bet_amount,valid_bet_amount,
+        settle,win_loss
+    </sql>
+
+    <select id="getUnRebateLists" resultType="com.c88.game.adapter.pojo.vo.MemberBetAmountRecordDailyVO">
+        SELECT  mbard.id ,mbard.member_id, mbard.username, mbard.gmt_create, mbard.settle_time, mbard.platform_code, mbard.platform_id,
+        IFNULL(ggc.id,null) as "game_category_code", mbard.bet_amount, mbard.valid_bet_amount, mbard.settle, mbard.win_loss, mbard.rebate_status ,
+        IFNULL(mv.current_vip_id,null) as "vipId",mv.current_vip_name as vipName,mbard.bet_times
+--         , affm.parent_username as parentName
+        FROM member_bet_amount_record_daily mbard
+          left join member_vip mv on mbard.member_id =mv.member_id
+          left join ga_game_category ggc on ggc.code  =  mbard.game_category_code
+--           left join affiliate.aff_affiliate_member affm on affm.member_id = mbard.member_id
+        WHERE mbard.rebate_status =0
+<!--        <if test="settleTime != null ">-->
+<!--            and mbard.settle_time <![CDATA[ <= ]]> #{settleTime}-->
+<!--        </if>-->
+    </select>
+
+
+
+    <insert id="insertBatchXml">
+
+        INSERT INTO member_bet_amount_record_daily ( member_id, username, platform_code, platform_id, game_category_code, bet_amount, valid_bet_amount, settle, win_loss, settle_time ,bet_times)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.memberId},#{item.username},#{item.platformCode},#{item.platformId},
+            #{item.gameCategoryCode},#{item.betAmount},#{item.validBetAmount},#{item.settle},#{item.winLoss},#{item.settleTime},#{item.betTimes})
+        </foreach>
+
+    </insert>
+</mapper>

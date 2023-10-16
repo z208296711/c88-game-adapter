@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.c88.game.adapter.mapper.GameCategoryMapper">
+
+    <select id="getGameCategoryByPlatformId" resultType="com.c88.game.adapter.pojo.entity.GameCategory">
+        SELECT category.*
+        from ga_platform_sort gps
+                 join ga_game_category category on category.id = gps.game_category_id
+        where gps.platform_id=#{id}
+    </select>
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.c88.game.adapter.mapper.PlatformSortMapper">
+
+    <update id="modifyPlatformSortBottom" parameterType="java.lang.Integer">
+        update ga_platform_sort gps,(select max(ps.sort) as sort from ga_platform_sort ps) as max_sort
+        set gps.sort = max_sort.sort + 1
+        where gps.id = #{id}
+    </update>
+
+    <update id="modifyPlatformSortTop" parameterType="java.lang.Integer">
+        update ga_platform_sort gps,(select min(ps.sort) as sort from ga_platform_sort ps) as min_sort
+        set gps.sort = min_sort.sort - 1
+        where gps.id = #{id}
+    </update>
+
+    <update id="modifyPlatformSortBottomByHot" parameterType="java.lang.Integer">
+        update ga_platform_sort gps,(select max(ps.hot_sort) as hotSort from ga_platform_sort ps) as max_sort
+        set gps.hot_sort = max_sort.hotSort + 1
+        where gps.id = #{id}
+    </update>
+
+    <update id="modifyPlatformSortTopByHot" parameterType="java.lang.Integer">
+        update ga_platform_sort gps,(select min(ps.hot_sort) as hotSort from ga_platform_sort ps) as min_sort
+        set gps.hot_sort = min_sort.hotSort - 1
+        where gps.id = #{id}
+    </update>
+
+    <select id="findAllPlatformGameByGameCategory" resultType="com.c88.game.adapter.pojo.vo.H5PlatformVO">
+        SELECT ps.game_category_id                     AS gameCategoryId,
+               gc.code                                 AS gameCategoryCode,
+               ps.platform_id                          AS id,
+               p.maintain_state                        AS maintainState,
+               p.name                                  AS name,
+               p.code                                  AS platformCode,
+               gc.to_game_lobby                        AS toGameLobby,
+               pgs.style_type                          AS styleType,
+               ps.sort                                 AS sort ,
+               IF(gc.to_game_lobby = 1, (SELECT pg.id
+                                         FROM ga_platform_game pg
+                                         WHERE pg.platform_id = ps.platform_id
+                                           AND pg.game_category_id = ps.game_category_id
+                                         LIMIT 1), '') AS params
+        FROM ga_platform_sort ps
+                 LEFT JOIN ga_game_category gc ON ps.game_category_id = gc.id
+                 LEFT JOIN ga_platform p ON p.id = ps.platform_id
+                 LEFT JOIN ga_platform_game_style pgs ON pgs.game_category_code = gc.code
+        where p.enable = 1
+        ORDER BY gc.sort
+    </select>
+
+    <select id="findAllHotPlatformGameByGameCategory" resultType="com.c88.game.adapter.pojo.vo.H5PlatformVO">
+        SELECT ps.game_category_id                     AS gameCategoryId,
+               gc.code                                 AS gameCategoryCode,
+               ps.platform_id                          AS id,
+               p.maintain_state                        AS maintainState,
+               p.name                                  AS name,
+               p.code                                  AS platformCode,
+               gc.to_game_lobby                        AS toGameLobby,
+               pgs.style_type                          AS styleType,
+               IF(gc.to_game_lobby = 1, (SELECT pg.id
+                                         FROM ga_platform_game pg
+                                         WHERE pg.platform_id = ps.platform_id
+                                           AND pg.game_category_id = ps.game_category_id
+                                         LIMIT 1), '') AS params
+        FROM ga_platform_sort ps
+                 LEFT JOIN ga_game_category gc ON ps.game_category_id = gc.id
+                 LEFT JOIN ga_platform p ON p.id = ps.platform_id
+                 LEFT JOIN ga_platform_game_style pgs ON pgs.game_category_code = gc.code
+        WHERE ps.hot = 1 and p.enable = 1
+        ORDER BY ps.hot_sort
+    </select>
+
+
+</mapper>

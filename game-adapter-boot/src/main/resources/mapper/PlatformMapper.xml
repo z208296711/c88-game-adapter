@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.c88.game.adapter.mapper.PlatformMapper">
+
+
+    <select id="findPlatformSort" resultType="com.c88.game.adapter.pojo.vo.PlatformSortVO">
+        select gs.id   id,
+               gp.id   platformId,
+               gp.name platformName,
+               gc.id   gameCategoryId,
+               gc.name gameCategoryName,
+               gs.sort platformSort,
+               gs.hot  hot
+        from ga_platform_sort gs
+                 left join ga_game_category gc on gs.game_category_id = gc.id
+                 left join ga_platform gp on gs.platform_id = gp.id
+        where gc.id = #{gameCategoryId}
+        order by gs.sort
+    </select>
+
+    <select id="findPlatformSortByHot" resultType="com.c88.game.adapter.pojo.vo.PlatformSortVO">
+        select gs.id       id,
+               gp.id       platformId,
+               gp.name     platformName,
+               gc.id       gameCategoryId,
+               gc.name     gameCategoryName,
+               gs.hot_sort platformSort,
+               gs.hot      hot
+        from ga_platform_sort gs
+                 left join ga_game_category gc on gs.game_category_id = gc.id
+                 left join ga_platform gp on gs.platform_id = gp.id
+        where gs.hot = 1
+        order by gs.hot_sort
+    </select>
+
+</mapper>

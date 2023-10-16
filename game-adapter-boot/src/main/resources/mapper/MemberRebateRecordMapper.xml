@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.c88.game.adapter.mapper.MemberRebateRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.c88.game.adapter.pojo.entity.MemberRebateRecord">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="memberId" column="member_id" jdbcType="BIGINT"/>
+            <result property="username" column="username" jdbcType="VARCHAR"/>
+            <result property="vipName" column="vip_name" jdbcType="VARCHAR"/>
+            <result property="vipId" column="vip_id" jdbcType="INTEGER"/>
+            <result property="betTimes" column="bet_times" jdbcType="INTEGER"/>
+            <result property="gmtCreate" column="gmt_create" jdbcType="TIMESTAMP"/>
+            <result property="betAmount" column="bet_amount" jdbcType="DECIMAL"/>
+            <result property="validBetAmount" column="valid_bet_amount" jdbcType="DECIMAL"/>
+            <result property="settle" column="settle" jdbcType="DECIMAL"/>
+            <result property="rebate" column="rebate" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,member_id,username,
+        vip_name,vip_id,
+        bet_times,gmt_create,platform_code,
+        platform_id,game_category_code,bet_amount,
+        valid_bet_amount,settle,rebate
+    </sql>
+    <insert id="insertBatchXml">
+
+        INSERT INTO member_rebate_record ( member_id, username, vip_name, vip_id, bet_times, gmt_create, bet_amount,valid_bet_amount,settle,rebate)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.memberId},#{item.username},#{item.vipName},
+             #{item.vipId},#{item.betTimes},#{item.gmtCreate},
+             #{item.betAmount},#{item.validBetAmount},#{item.settle},#{item.rebate})
+        </foreach>
+
+    </insert>
+
+</mapper>
